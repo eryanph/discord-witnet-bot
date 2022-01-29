@@ -8,7 +8,7 @@ const DISCORD_LISTEN = process.env.DISCORD_LISTEN.split(',');
 const DISCORD_BOT_TOKEN = process.env.DISCORD_BOT_TOKEN;
 const DISCORD_PREFIX = process.env.DISCORD_PREFIX;
 
-const GATE_IO_API = 'https://api.gateio.ws/api/v4/spot/tickers?currency_pair=wit_usdt';
+const CG_API = 'https://api.coingecko.com/api/v3/coins/markets?vs_currency=usd&ids=witnet';
 
 const client = new Client({ intents: [Intents.FLAGS.GUILDS, Intents.FLAGS.GUILD_MESSAGES] });
 
@@ -17,8 +17,8 @@ const sleep = (ms) => new Promise((resolve) => setTimeout(resolve, ms));
 let currentPrice = null;
 let currentPriceChange = null;
 
-const requestGateIo = () => new Promise((resolve) => {
-  axios.get(GATE_IO_API)
+const requestCg = () => new Promise((resolve) => {
+  axios.get(CG_API)
     .then(res => {
       resolve(res.data);
     })
@@ -30,14 +30,14 @@ const requestGateIo = () => new Promise((resolve) => {
 
 const main = async () => {
   while (true) {
-    const data = await requestGateIo();
+    const data = await requestCg();
 
     if (data) {
-      console.log('- received gate.io data');
+      console.log('- received coingecko data');
 
       const wit = data[0];
-      const price = wit.last;
-      const priceChange = wit.change_percentage;
+      const price = wit.current_price;
+      const priceChange = wit.price_change_percentage_24h;
 
       let priceChangeStatus = '';
 
@@ -61,7 +61,7 @@ const main = async () => {
       currentPrice = price;
       currentPriceChange = priceChange;
     } else {
-      console.log('- gate.io request error');
+      console.log('- coingecko request error');
     }
 
     await sleep(SLEEP_TIME);

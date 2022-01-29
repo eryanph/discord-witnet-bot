@@ -1,6 +1,6 @@
 {
   "name": "discord-witnet-bot",
-  "version": "1.0.0",
+  "version": "1.1.0",
   "description": "Discord bot that display WIT's price.",
   "main": "app.js",
   "scripts": {
